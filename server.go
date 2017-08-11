@@ -34,13 +34,13 @@ func GetEngine() *gin.Engine {
 		Timeout:    time.Hour,
 		MaxRefresh: time.Hour,
 		Authenticator: func(userId string, password string, c *gin.Context) (string, bool) {
-			if n, err := DB.C("users").Find(bson.M{"username": userId, "password": password}).Count(); err != nil && n >= 1 {
+			if n, err := DB.C("users").Find(bson.M{"email": userId, "password": password}).Count(); err != nil && n >= 1 {
 				return userId, false
 			}
 			return userId, true
 		},
 		Authorizator: func(userId string, c *gin.Context) bool {
-			if DB.C("users").Find(bson.M{"username": userId}).One(nil) != nil {
+			if DB.C("users").Find(bson.M{"email": userId}).One(nil) != nil {
 				return false
 			}
 			return true
@@ -65,7 +65,6 @@ func GetEngine() *gin.Engine {
 	{
 		// refresh your token
 		auth.GET("/refresh_token", authMiddleware.RefreshHandler)
-
 	}
 	return r
 }
