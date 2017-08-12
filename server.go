@@ -3,29 +3,29 @@ package main
 import (
 	"time"
 
+	"github.com/gin-contrib/cors"
+
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
-	jwt "github.com/appleboy/gin-jwt"
+	"fmt"
+
+	"github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 )
 
 // DB includes the context
 var DB *mgo.Database
 
 // GetEngine returns a *gin.Engine
-func GetEngine() *gin.Engine {
+func main() {
 	r := gin.Default()
-
-	viper.SetConfigName("config")
-	viper.AddConfigPath("/etc/code-dashboard/")
-	viper.AddConfigPath("$HOME/.code-dashboard")
-	viper.AddConfigPath(".")
-	viper.ReadInConfig()
-	viper.SetDefault("mongoURL", "localhost")
-
-	mongo, _ := mgo.Dial(viper.GetString("mongoURL"))
+	r.Use(cors.Default())
+	mongo, mongoerr := mgo.Dial("localhost")
+	if mongoerr != nil {
+		fmt.Println("Could not connect to db")
+		return
+	}
 	DB = mongo.DB("code-dashboard")
 
 	authMiddleware := &jwt.GinJWTMiddleware{
@@ -64,8 +64,7 @@ func GetEngine() *gin.Engine {
 	{
 		// refresh your token
 		auth.GET("/refresh_token", authMiddleware.RefreshHandler)
-	}
-	return r
-}
 
-func main() { GetEngine().Run(":5000") }
+	}
+	r.Run(":3000")
+}

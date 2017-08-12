@@ -15,8 +15,17 @@ type register struct {
 func RegisterHandler(c *gin.Context) {
 	var r register
 	c.BindJSON(&r)
-	if n, _ := DB.C("users").Find(bson.M{"email": r.Email}).Count(); n == 0 {
-		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(r.Pass), bcrypt.DefaultCost)
+	n, err := DB.C("users").Find(bson.M{"email": r.Email}).Count()
+	if err != nil {
+		c.JSON(500, gin.H{"message": "Failed to connect to database: " + err.Error()})
+		return
+	}
+	if n == 0 {
+		hashedPassword, err1 := bcrypt.GenerateFromPassword([]byte(r.Pass), bcrypt.DefaultCost)
+		if err1 != nil {
+			c.JSON(500, gin.H{"message": "Failed to encrypt password!"})
+			return
+		}
 		a := User{Email: r.Email, Password: string(hashedPassword[:])}
 		if DB.C("users").Insert(a) != nil {
 			c.JSON(500, gin.H{"message": "Failed to save user"})
