@@ -57,7 +57,6 @@ func GetEngine() *gin.Engine {
 	}
 
 	r.POST("/login", authMiddleware.LoginHandler)
-
 	r.POST("/register", RegisterHandler)
 
 	auth := r.Group("/api/v1")
