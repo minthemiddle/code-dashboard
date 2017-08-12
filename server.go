@@ -60,11 +60,17 @@ func main() {
 	r.POST("/register", RegisterHandler)
 
 	auth := r.Group("/api/v1")
+
 	auth.Use(authMiddleware.MiddlewareFunc())
 	{
 		// refresh your token
 		auth.GET("/refresh_token", authMiddleware.RefreshHandler)
 
+		// Get current user
+		auth.GET("/user", GetUser)
+
+		// Change a user
+		auth.POST("/user", ChangeUser)
 	}
 	r.Run(":3000")
 }
