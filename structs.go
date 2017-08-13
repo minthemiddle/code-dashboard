@@ -12,6 +12,8 @@ type User struct {
 	Email     string        `json:"email"`
 	FirstName string        `json:"first_name"`
 	LastName  string        `json:"last_name"`
+	Admin     bool `json:"admin"`
+	Messenger bool `json:"messenger"`
 }
 
 // LimitedUser for changing a user
@@ -24,11 +26,11 @@ type LimitedUser struct {
 // Camp struct
 type Camp struct {
 	ID           bson.ObjectId `json:"id,omitempty" bson:"_id,omitempty"`
-	City         string        `json:"city"`
-	From         int64         `json:"from"`
-	To           int64         `json:"to"`
-	Location     string        `json:"location"`
-	DocumentURLS []string      `json:"document_urls"`
+	City         string        `json:"city" binding:"required"`
+	From         int64         `json:"from" binding:"required"`
+	To           int64         `json:"to" binding:"required"`
+	Location     string        `json:"location" binding:"required"`
+	DocumentURLS []string      `json:"document_urls" binding:"required"`
 }
 
 // Participant struct
@@ -59,7 +61,7 @@ type Attendant struct {
 	ParticipantID bson.ObjectId `json:"participant_id"`
 	Attended      []int64       `json:"attended"`
 	Laptop        bool          `json:"laptop"`
-	LaptopStats   []struct {
+	LaptopStats []struct {
 		Got      bool `json:"got"`
 		Received bool `json:"received"`
 		ID       int  `json:"id"`
@@ -68,13 +70,13 @@ type Attendant struct {
 	FeePaid      bool `json:"paid"`
 	LaptopWaived bool `json:"laptop_waive"`
 	FeeWaived    bool `json:"fee_waved"`
-	Documents    []struct {
+	Documents []struct {
 		Title     string `json:"title"`
 		Delivered bool   `json:"delivered"`
 	} `json:"laptopstats"`
 	Experienced  bool     `json:"experienced"`
 	ProjectIdeas []string `json:"project_ideas"`
-	Feedback     struct {
+	Feedback struct {
 		PrepOrganisation   rating `json:"prep_organisation"`
 		DuringOrganisation rating `json:"during_organisation"`
 		Feedback           string `json:"feedback"`

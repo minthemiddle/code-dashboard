@@ -3,8 +3,7 @@ package main
 import (
 	"time"
 
-	"github.com/gin-contrib/cors"
-
+	"github.com/itsjamie/gin-cors"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
@@ -20,7 +19,17 @@ var DB *mgo.Database
 // GetEngine returns a *gin.Engine
 func main() {
 	r := gin.Default()
-	r.Use(cors.Default())
+
+	r.Use(cors.Middleware(cors.Config{
+		Origins:         "*",
+		Methods:         "GET, PUT, POST, DELETE",
+		RequestHeaders:  "Origin, Authorization, Content-Type",
+		ExposedHeaders:  "",
+		MaxAge:          50 * time.Second,
+		Credentials:     true,
+		ValidateHeaders: false,
+	}))
+
 	mongo, mongoerr := mgo.Dial("localhost")
 	if mongoerr != nil {
 		fmt.Println("Could not connect to db")
@@ -69,8 +78,18 @@ func main() {
 		// Get current user
 		auth.GET("/user", GetUser)
 
+
 		// Change a user
-		auth.POST("/user", ChangeUser)
+		auth.PUT("/user", ChangeUser)
+
+		// Delete a user
+		auth.DELETE("/user", DeleteUser)
+
+		// Get all camps
+		auth.GET("/camps", ListCamps)
+
+		// Create a camp
+		auth.POST("/camps", CreateCamp)
 	}
 	r.Run(":3000")
 }

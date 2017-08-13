@@ -26,7 +26,7 @@ func RegisterHandler(c *gin.Context) {
 			c.JSON(500, gin.H{"message": "Failed to encrypt password!"})
 			return
 		}
-		a := User{Email: r.Email, Password: string(hashedPassword[:])}
+		a := User{Email: r.Email, Password: string(hashedPassword[:]), Parent: false, Admin: false}
 		if DB.C("users").Insert(a) != nil {
 			c.JSON(500, gin.H{"message": "Failed to save user"})
 			return
