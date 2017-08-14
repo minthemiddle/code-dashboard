@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"time"
 
 	"github.com/itsjamie/gin-cors"
@@ -78,7 +79,6 @@ func main() {
 		// Get current user
 		auth.GET("/user", GetUser)
 
-
 		// Change a user
 		auth.PUT("/user", ChangeUser)
 
@@ -93,3 +93,5 @@ func main() {
 	}
 	r.Run(":3000")
 }
+
+func slugify(s string) string { return strings.Replace(s, " ", "-", -1) }
